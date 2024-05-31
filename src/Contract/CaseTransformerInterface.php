@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace ControlBit\Dto\Contract\Mapper;
+namespace ControlBit\Dto\Contract;
 
 interface CaseTransformerInterface
 {

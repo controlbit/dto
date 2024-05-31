@@ -3,10 +3,8 @@ declare(strict_types=1);
 
 namespace ControlBit\Dto\Util;
 
-use ControlBit\Dto\Attribute\Identifier;
-use ControlBit\Dto\Attribute\Ignore;
-use ControlBit\Dto\MetaData\ObjectMetadata;
-use ControlBit\Dto\MetaData\PropertyMetadata;
+use ControlBit\Dto\MetaData\Class\ClassMetadata;
+use ControlBit\Dto\MetaData\Property\PropertyMetadata;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -19,7 +17,7 @@ final class Initializer
         // noop
     }
 
-    public static function autoInitialize(object $object, ObjectMetadata $objectMetadata): void
+    public static function autoInitialize(object $object, ClassMetadata $objectMetadata): void
     {
         foreach ($objectMetadata->getProperties() as $propertyMetadata) {
             self::autoInitializeProperty($object, $propertyMetadata);
@@ -47,7 +45,7 @@ final class Initializer
             return;
         }
 
-        if ($types->hasOneClass(ArrayCollection::class)) {
+        if ($types->hasOnlyOneClass(ArrayCollection::class)) {
             $accessor->getSetter()?->set($object, new ArrayCollection());
         }
     }

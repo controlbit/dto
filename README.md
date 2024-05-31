@@ -264,9 +264,10 @@ Attribute requires a constructor argument that must be
 a class (FQCN) that implements `ControlBit\Dto\Contract\TransformerInterface`
 
 For example, transformer could look like this:
+
 ```php
 
-use ControlBit\Dto\Contract\TransformerInterface;
+use ControlBit\Dto\Contract\Transformer\TransformerInterface;
 
 final class PriceWithVatTransformer implements TransformerInterface
 {

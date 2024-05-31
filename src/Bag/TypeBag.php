@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace ControlBit\Dto\Bag;
 
-final readonly class TypeBag
+final readonly class TypeBag implements \Stringable
 {
     /**
      * @param  array<string|null>  $types
@@ -30,10 +30,32 @@ final readonly class TypeBag
             \in_array('iterable', $this->types, true);
     }
 
+    public function hasInstanceOf(string $classOrInterface): bool
+    {
+        foreach ($this->types as $type) {
+            if (\is_subclass_of($type, $classOrInterface)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getInstanceOf(string $classOrInterface): ?string
+    {
+        foreach ($this->types as $type) {
+            if (\is_subclass_of($type, $classOrInterface)) {
+                return $type;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * @param  class-string|null  $class
      */
-    public function hasOneClass(?string $class = null): bool
+    public function hasOnlyOneClass(?string $class = null): bool
     {
         $classes = \array_filter(
             $this->types,
@@ -70,5 +92,15 @@ final readonly class TypeBag
     public function all(): array
     {
         return $this->types;
+    }
+
+    public function __toString(): string
+    {
+        return \implode(
+            '|',
+            \array_map(function (string|null $type){
+                return $type ?? 'null';
+            }, $this->types)
+        );
     }
 }

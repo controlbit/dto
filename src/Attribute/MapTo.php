@@ -11,12 +11,12 @@ namespace ControlBit\Dto\Attribute;
 #[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::IS_REPEATABLE)]
 final class MapTo
 {
-    public function __construct(private readonly string $propertyName)
+    public function __construct(private readonly string $member)
     {
     }
 
-    public function getPropertyName(): string
+    public function getMember(): string
     {
-        return $this->propertyName;
+        return $this->member;
     }
 }

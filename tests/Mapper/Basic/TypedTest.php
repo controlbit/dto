@@ -2,7 +2,7 @@
 
 namespace ControlBit\Dto\Tests\Mapper\Basic;
 
-use ControlBit\Dto\Exception\ValueException;
+use ControlBit\Dto\Exception\PropertyMapException;
 use ControlBit\Dto\Tests\LibraryTestCase;
 
 class TypedTest extends LibraryTestCase
@@ -90,9 +90,9 @@ class TypedTest extends LibraryTestCase
             public int $foo;
         };
 
-        $this->expectException(ValueException::class);
+        $this->expectException(PropertyMapException::class);
         $this->expectExceptionMessageMatches(
-            '/Cannot map value "foo" of "(.*)" to destination object of "(.*)". Check if writable\/callable and correct type\(s\) \(\[string\] to \[int\]\)/'
+            '/Cannot map property \"foo\" of \"(.*)\" to destination object of \"(.*)\". Check if writable\/callable and correct type\(s\) \(\[string\] to \[int\]\)/'
         );
 
         $this->getMapper()->map($from, $to);

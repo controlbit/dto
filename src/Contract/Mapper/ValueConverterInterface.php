@@ -2,12 +2,12 @@
 
 namespace ControlBit\Dto\Contract\Mapper;
 
+use ControlBit\Dto\Contract\Accessor\SetterInterface;
 use ControlBit\Dto\Mapper\Mapper;
-use ControlBit\Dto\MetaData\PropertyMetadata;
 
 interface ValueConverterInterface
 {
-    public function supports(object $source, PropertyMetadata $sourcePropertyMetadata, mixed $value): bool;
+    public function supports(SetterInterface $setter, mixed $value): bool;
 
-    public function execute(Mapper $mapper, PropertyMetadata $sourcePropertyMetadata, mixed $value): mixed;
+    public function execute(Mapper $mapper, SetterInterface $setter, mixed $value): mixed;
 }

@@ -29,9 +29,7 @@ class Extension extends SymfonyExtension
         $loader->load('case_transformer.xml');
         $loader->load('finder.xml');
         $loader->load('factory.xml');
-        $loader->load('map_adapter.xml');
         $loader->load('value_converter.xml');
-        $loader->load('builder.xml');
         $loader->load('mapper.xml');
         $loader->load('event_listener.xml');
     }

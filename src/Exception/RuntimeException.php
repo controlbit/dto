@@ -5,7 +5,7 @@ namespace ControlBit\Dto\Exception;
 
 use ControlBit\Dto\Contract\DtoExceptionInterface;
 
-final class RuntimeException extends \RuntimeException implements DtoExceptionInterface
+class RuntimeException extends \RuntimeException implements DtoExceptionInterface
 {
 
 }

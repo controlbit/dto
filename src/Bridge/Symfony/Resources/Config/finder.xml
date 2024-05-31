@@ -27,13 +27,6 @@
         </service>
 
         <service
-                id="ControlBit\Dto\Finder\SetterType\MapTo"
-                class="ControlBit\Dto\Finder\SetterType\MapTo"
-        >
-            <tag name="dto_bundle.setter_type" priority="100"/>
-        </service>
-
-        <service
                 id="ControlBit\Dto\Finder\SetterType\ViaSetter"
                 class="ControlBit\Dto\Finder\SetterType\ViaSetter"
         >

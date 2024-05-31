@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ControlBit\Dto\Attribute;
 
+use ControlBit\Dto\Enum\ConstructorStrategy;
+
 /**
  * Denotes when Given Object is DTO, on property, when mapping, or
  * with argument, on Controller injection, when using Symfony.
@@ -14,7 +16,10 @@ class Dto
     /**
      * @param  class-string|null  $class
      */
-    public function __construct(public ?string $class = null)
+    public function __construct(
+        public ?string $class = null,
+        private readonly ConstructorStrategy $strategy = ConstructorStrategy::OPTIONAL
+    )
     {
     }
 
@@ -24,5 +29,10 @@ class Dto
     public function getClass(): ?string
     {
         return $this->class;
+    }
+
+    public function getStrategy(): ConstructorStrategy
+    {
+        return $this->strategy;
     }
 }

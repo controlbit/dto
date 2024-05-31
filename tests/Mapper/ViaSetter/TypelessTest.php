@@ -2,9 +2,8 @@
 
 namespace ControlBit\Dto\Tests\Mapper\ViaSetter;
 
-use ControlBit\Dto\Attribute\Setter;
-use ControlBit\Dto\Exception\InvalidArgumentException;
-use ControlBit\Dto\Exception\ValueException;
+use ControlBit\Dto\Attribute\MapTo;
+use ControlBit\Dto\Exception\PropertyMapException;
 use ControlBit\Dto\Tests\LibraryTestCase;
 
 class TypelessTest extends LibraryTestCase
@@ -12,7 +11,7 @@ class TypelessTest extends LibraryTestCase
     public function testViaSetter(): void
     {
         $from = new class() {
-            #[Setter('setBar')]
+            #[MapTo('setBar')]
             public $foo = 'foo';
         };
 
@@ -35,10 +34,10 @@ class TypelessTest extends LibraryTestCase
         $this->assertEquals('foo', $mappedObject->getFoo());
     }
 
-    public function testSetterMethodDoesNotExistsThrowsException(): void
+    public function testSetterMethodDoesNotExistsLeavesUnmapped(): void
     {
         $from = new class() {
-            #[Setter('setFoo')]
+            #[MapTo('setFoo')]
             public $foo = 'foo';
         };
 
@@ -50,24 +49,20 @@ class TypelessTest extends LibraryTestCase
                 $this->bar = $foo;
             }
 
-            public function isBar()
+            public function getBar()
             {
                 return $this->bar;
             }
         };
 
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageMatches(
-            '/Provided setter method \"setFoo\(\)\" on \"(.*)\" does not exists\./'
-        );
-
-        $this->getMapper()->map($from, $to);
+        $mapped = $this->getMapper()->map($from, $to);
+        self::assertFalse($mapped->getBar());
     }
 
     public function testSetterNonPublicMethodThrowsException(): void
     {
         $from = new class() {
-            #[Setter('setBar')]
+            #[MapTo('setBar')]
             public $foo = 'foo';
         };
 
@@ -78,17 +73,9 @@ class TypelessTest extends LibraryTestCase
             {
                 $this->bar = $foo;
             }
-
-            public function isBar()
-            {
-                return $this->bar;
-            }
         };
 
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageMatches(
-            '/Provided setter method \"setBar\(\)\" on \"(.*)\" must be public\./'
-        );
+        $this->expectException(PropertyMapException::class);
 
         $this->getMapper()->map($from, $to);
     }

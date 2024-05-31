@@ -5,21 +5,22 @@ namespace ControlBit\Dto\Finder\SetterType;
 
 use ControlBit\Dto\Contract\Accessor\SetterInterface;
 use ControlBit\Dto\Contract\Mapper\SetterResolverInterface;
-use ControlBit\Dto\MetaData\ObjectMetadata;
-use ControlBit\Dto\MetaData\PropertyMetadata;
+use ControlBit\Dto\MetaData\Class\ClassMetadata;
+use ControlBit\Dto\MetaData\Map\MemberMapMetadata;
 
 final class Direct implements SetterResolverInterface
 {
+    public function __construct()
+    {
+    }
+
     public function resolve(
-        PropertyMetadata $sourcePropertyMetadata,
-        ObjectMetadata   $destinationMetaData,
+        ClassMetadata    $destinationMetaData,
+        MemberMapMetadata $memberMapMetadata
     ): ?SetterInterface {
-        $toPropertyMetadata = $destinationMetaData->getProperty($sourcePropertyMetadata->getName());
 
-        if (null === $toPropertyMetadata) {
-            return null;
-        }
+        $toPropertyMetadata = $destinationMetaData->getProperty($memberMapMetadata->getDestinationMember());
 
-        return $toPropertyMetadata->getAccessor()->getSetter();
+        return $toPropertyMetadata?->getAccessor()->getSetter();
     }
 }

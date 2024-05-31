@@ -12,12 +12,17 @@ final class NestedDto
 
     public array $scalarArray;
 
-    public string $scalar;
+    public ?string $scalar;
 
     public ?NestedDto $nestedDto;
 
-    public function __construct(array $nestedDtoArray = [], array $scalarArray = [], $scalar = null, $nestedDto = null)
-    {
+    public function __construct(
+        #[Dto(NestedDto::class)]
+        array     $nestedDtoArray = [],
+        array     $scalarArray = [],
+        ?string   $scalar = null,
+        NestedDto $nestedDto = null,
+    ) {
         $this->nestedDtoArray = $nestedDtoArray;
         $this->scalarArray    = $scalarArray;
         $this->scalar         = $scalar;

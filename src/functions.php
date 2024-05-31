@@ -6,7 +6,7 @@ namespace ControlBit\Dto;
 /**
  * @template T of object
  * @param  object|\ReflectionProperty|class-string  $subject
- * @param  class-string<T>      $attributeClass
+ * @param  class-string<T>                          $attributeClass
  *
  * @return object|null
  */
@@ -37,8 +37,9 @@ function find_attribute(mixed $subject, string $attributeClass): ?object
 /**
  * @return object[]
  */
-function instantiate_attributes(\ReflectionProperty|\ReflectionMethod|\ReflectionObject $reflection): array
-{
+function instantiate_attributes(
+    \ReflectionProperty|\ReflectionMethod|\ReflectionObject|\ReflectionParameter $reflection,
+): array {
     return \array_map(static function (\ReflectionAttribute $reflectionAttribute) {
         return $reflectionAttribute->newInstance();
     }, $reflection->getAttributes());

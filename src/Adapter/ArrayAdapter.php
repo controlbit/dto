@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace ControlBit\Dto\Adapter;
 
-use ControlBit\Dto\Contract\Mapper\CaseTransformerInterface;
 use ControlBit\Dto\Contract\Mapper\MapAdapterInterface;
 
 /**

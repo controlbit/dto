@@ -5,9 +5,9 @@ namespace ControlBit\Dto\Finder;
 
 use ControlBit\Dto\Contract\Accessor\SetterInterface;
 use ControlBit\Dto\Contract\Mapper\SetterResolverInterface;
-use ControlBit\Dto\Exception\SetterNotFoundException;
-use ControlBit\Dto\MetaData\ObjectMetadata;
-use ControlBit\Dto\MetaData\PropertyMetadata;
+use ControlBit\Dto\MetaData\Class\ClassMetadata;
+use ControlBit\Dto\MetaData\Map\MemberMapMetadata;
+use ControlBit\Dto\MetaData\Property\PropertyMetadata;
 
 /**
  * Resolves/finds which setter to use by given
@@ -23,10 +23,10 @@ final readonly class SetterFinder
     {
     }
 
-    public function find(PropertyMetadata $sourcePropertyMetadata, ObjectMetadata $destinationMetadata): ?SetterInterface
+    public function find(ClassMetadata $destinationMetadata, MemberMapMetadata $memberMapMetadata): ?SetterInterface
     {
         foreach ($this->resolvers as $resolver) {
-            $setter = $resolver->resolve($sourcePropertyMetadata, $destinationMetadata);
+            $setter = $resolver->resolve($destinationMetadata, $memberMapMetadata);
 
             if (null === $setter) {
                 continue;

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace ControlBit\Dto\Bag;
 
-use ControlBit\Dto\MetaData\MethodMetadata;
+use ControlBit\Dto\MetaData\Method\MethodMetadata;
 
 /**
  * @implements \IteratorAggregate<MethodMetadata>

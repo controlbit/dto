@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ControlBit\Dto\Attribute;
 
-use ControlBit\Dto\Contract\TransformerInterface;
+use ControlBit\Dto\Contract\Transformer\TransformerInterface;
 use ControlBit\Dto\Exception\InvalidArgumentException;
 
 /**
@@ -45,7 +45,7 @@ readonly class Transformer
     /**
      * @return class-string<TransformerInterface>
      */
-    public function getTransformerClass(): string
+    public function getTransformerIdOrClass(): string
     {
         return $this->transformerClass;
     }
