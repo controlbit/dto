@@ -21,6 +21,9 @@ final class ArrayToObject implements ValueConverterInterface
         return $setter->getType()->hasOnlyOneClass();
     }
 
+    /**
+     * @param  array<mixed>  $value
+     */
     public function execute(Mapper $mapper, SetterInterface $setter, mixed $value): mixed
     {
         return $mapper->map($value, $setter->getType()->getOneClass());

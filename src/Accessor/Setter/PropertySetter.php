@@ -8,7 +8,6 @@ use ControlBit\Dto\Bag\AttributeBag;
 use ControlBit\Dto\Bag\TypeBag;
 use ControlBit\Dto\Contract\Accessor\SetterInterface;
 use ControlBit\Dto\Contract\Transformer\TransformableInterface;
-use ControlBit\Dto\Contract\Transformer\TransformerInterface;
 
 /**
  * Member setter by property name directly
@@ -37,6 +36,9 @@ readonly class PropertySetter implements SetterInterface, TransformableInterface
         return $this->attributes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getTransformerClassOrId(): ?string
     {
         foreach ($this->attributes as $attribute) {

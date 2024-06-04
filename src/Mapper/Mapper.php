@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace ControlBit\Dto\Mapper;
 
 use ControlBit\Dto\Contract\Mapper\MapperInterface;
-use ControlBit\Dto\Exception\RuntimeException;
 use ControlBit\Dto\Exception\PropertyMapException;
 use ControlBit\Dto\Factory\DestinationFactory;
 use ControlBit\Dto\Finder\SetterFinder;

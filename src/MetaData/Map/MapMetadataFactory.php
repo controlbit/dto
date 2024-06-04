@@ -7,7 +7,6 @@ use ControlBit\Dto\Attribute\MapFrom;
 use ControlBit\Dto\Attribute\MapTo;
 use ControlBit\Dto\Attribute\Transformer;
 use ControlBit\Dto\Bag\AttributeBag;
-use ControlBit\Dto\Enum\MappingDirection;
 use ControlBit\Dto\MetaData\Class\ClassMetadata;
 use ControlBit\Dto\MetaData\Property\PropertyMetadata;
 
@@ -26,8 +25,7 @@ final class MapMetadataFactory
                 default                          => new MemberMapMetadata(
                     $propertyMetadata->getName(),
                     $propertyMetadata->getName(),
-                    $this->getTransformer($propertyMetadata),
-                    MappingDirection::TO,
+                    $this->getTransformer($propertyMetadata)
                 ),
             };
 
@@ -37,7 +35,7 @@ final class MapMetadataFactory
         return $mapMetadata;
     }
 
-    private function mapTo(PropertyMetadata $propertyMetadata, AttributeBag $attributes)
+    private function mapTo(PropertyMetadata $propertyMetadata, AttributeBag $attributes): MemberMapMetadata
     {
         /** @var MapTo $attribute */
         $attribute = $attributes->get(MapTo::class);
@@ -46,11 +44,10 @@ final class MapMetadataFactory
             $propertyMetadata->getName(),
             $attribute->getMember(),
             $this->getTransformer($propertyMetadata),
-            MappingDirection::TO,
         );
     }
 
-    private function mapFrom(PropertyMetadata $propertyMetadata, AttributeBag $attributes)
+    private function mapFrom(PropertyMetadata $propertyMetadata, AttributeBag $attributes): MemberMapMetadata
     {
         /** @var MapFrom $attribute */
         $attribute = $attributes->get(MapFrom::class);
@@ -59,7 +56,6 @@ final class MapMetadataFactory
             $propertyMetadata->getName(),
             $attribute->getMember(),
             $this->getTransformer($propertyMetadata),
-            MappingDirection::FROM,
         );
     }
 

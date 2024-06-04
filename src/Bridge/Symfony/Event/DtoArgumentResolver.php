@@ -7,7 +7,6 @@ use ControlBit\Dto\Attribute\Dto;
 use ControlBit\Dto\Attribute\RequestDto;
 use ControlBit\Dto\Contract\CaseTransformerInterface;
 use ControlBit\Dto\Enum\RequestPart;
-use ControlBit\Dto\Exception\InvalidArgumentException;
 use ControlBit\Dto\Exception\ValidationException;
 use ControlBit\Dto\Mapper\Mapper;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,12 +15,12 @@ use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use function ControlBit\Dto\find_attribute;
 
-class DtoArgumentResolver implements ValueResolverInterface
+readonly class DtoArgumentResolver implements ValueResolverInterface
 {
     public function __construct(
-        private readonly Mapper              $mapper,
-        private readonly CaseTransformerInterface $caseTransformer,
-        private readonly ?ValidatorInterface $validator,
+        private Mapper                   $mapper,
+        private CaseTransformerInterface $caseTransformer,
+        private ?ValidatorInterface      $validator,
     ) {
     }
 
@@ -36,16 +35,6 @@ class DtoArgumentResolver implements ValueResolverInterface
 
         $dto = $this->mapper->map($this->requestToArray($request, $argument), $argument->getType());
 
-        if (false === $dto) {
-            throw new InvalidArgumentException(
-                \sprintf(
-                    'Cannot resolve controller argument "%s" of type "%s" from request.',
-                    $argument->getName(),
-                    $argument->getType(),
-                )
-            );
-        }
-
         $this->validate($dto);
 
         return [$dto];
@@ -59,7 +48,8 @@ class DtoArgumentResolver implements ValueResolverInterface
             return false;
         }
 
-        if (null === find_attribute($type, Dto::class) && \count($argument->getAttributesOfType(RequestDto::class)) === 0) {
+        if (null === find_attribute($type,
+                                    Dto::class) && \count($argument->getAttributesOfType(RequestDto::class)) === 0) {
             return false;
         }
 
@@ -79,6 +69,9 @@ class DtoArgumentResolver implements ValueResolverInterface
         }
     }
 
+    /**
+     * @return array<mixed>
+     */
     private function requestToArray(Request $request, ArgumentMetadata $argument): array
     {
         $requestDto = $argument->getAttributesOfType(RequestDto::class)[0] ?? new RequestDto();;

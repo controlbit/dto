@@ -33,7 +33,7 @@ final readonly class TypeBag implements \Stringable
     public function hasInstanceOf(string $classOrInterface): bool
     {
         foreach ($this->types as $type) {
-            if (\is_subclass_of($type, $classOrInterface)) {
+            if (\is_subclass_of($type, $classOrInterface)) { // @phpstan-ignore-line
                 return true;
             }
         }
@@ -44,7 +44,7 @@ final readonly class TypeBag implements \Stringable
     public function getInstanceOf(string $classOrInterface): ?string
     {
         foreach ($this->types as $type) {
-            if (\is_subclass_of($type, $classOrInterface)) {
+            if (\is_subclass_of($type, $classOrInterface)) { // @phpstan-ignore-line
                 return $type;
             }
         }
@@ -74,7 +74,7 @@ final readonly class TypeBag implements \Stringable
     }
 
     /**
-     * @return class-string|null
+     * @return class-string<object>|null
      */
     public function getOneClass(): ?string
     {

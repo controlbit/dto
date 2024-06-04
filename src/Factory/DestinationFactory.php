@@ -20,6 +20,7 @@ use ControlBit\Dto\Util\TypeTool;
 use Doctrine\Persistence\ManagerRegistry;
 use function ControlBit\Dto\instantiate_attributes;
 
+// TODO: Refactor!!
 final class DestinationFactory
 {
     public function __construct(
@@ -54,7 +55,7 @@ final class DestinationFactory
             );
         }
 
-        if (null !== $entityAttribute?->getTarget() && null !== $identifier) {
+        if (null !== $this->doctrineRegistry && null !== $identifier && null !== $entityAttribute?->getTarget()) {
             return $this->fetchEntity($entityAttribute->getTarget(), $identifier);
         }
 
@@ -68,11 +69,12 @@ final class DestinationFactory
 
         if ($this->constructorStrategy === ConstructorStrategy::ALWAYS && null === $constructor) {
             throw new InvalidArgumentException(
-                \sprintf('Constructor Strategy is set to Always, but "%s" has no constructor or it\'s private.', $destination)
+                \sprintf('Constructor Strategy is set to Always, but "%s" has no constructor or it\'s private.',
+                         $destination)
             );
         }
 
-        if ($this->constructorStrategy === ConstructorStrategy::ALWAYS && $constructor?->getNumberOfParameters() ?? 0 > \count($sourceMapMetadataCollection)) {
+        if ($this->constructorStrategy === ConstructorStrategy::ALWAYS && ($constructor?->getNumberOfParameters() ?? 0) > \count($sourceMapMetadataCollection)) {
             throw new InvalidArgumentException(
                 'Not enough arguments in constructor, to be able to map with ConstructorStrategy "Always".'
             );
@@ -91,6 +93,9 @@ final class DestinationFactory
         );
     }
 
+    /**
+     * @param  \ReflectionClass<object>  $reflectionClass
+     */
     private function mapViaConstructor(
         Mapper                $mapper,
         object                $source,
@@ -158,9 +163,12 @@ final class DestinationFactory
         return $reflectionClass->newInstanceArgs($argumentsToPass);
     }
 
+    /**
+     * @param  class-string  $destination
+     */
     private function fetchEntity(string $destination, string|int $identifier): object
     {
-        $entityManager = $this->doctrineRegistry->getManagerForClass($destination);
+        $entityManager = $this->doctrineRegistry->getManagerForClass($destination); // @phpstan-ignore-line
 
         if (null === $entityManager) {
             throw new RuntimeException(

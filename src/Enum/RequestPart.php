@@ -23,15 +23,21 @@ enum RequestPart: string
      */
     case FILES = 'FILES';
 
-    public static function all()
+    /**
+     * @return RequestPart[]
+     */
+    public static function all(): array
     {
         return \array_map(
-            fn(string $name) => static::from($name),
+            static fn(string $name) => self::from($name),
             \array_column(self::cases(), 'name'),
         );
     }
 
-    public static function allValues()
+    /**
+     * @return array<string>
+     */
+    public static function allValues(): array
     {
         return \array_column(self::cases(), 'value');
     }

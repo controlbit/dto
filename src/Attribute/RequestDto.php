@@ -11,28 +11,43 @@ use ControlBit\Dto\Exception\InvalidArgumentException;
  * Explains which parts of Request are mapped into DTO
  */
 #[\Attribute(\Attribute::TARGET_PARAMETER)]
-class RequestDto
+readonly class RequestDto
 {
-    private readonly array $parts;
+    /**
+     * @var RequestPart[]
+     */
+    private array $parts;
 
     /**
-     * @param  array<string|RequestPart>|null  $parts
+     * @param  array<string|RequestPart>  $parts
      *
      * @throws InvalidArgumentException
      */
-    public function __construct(?array $parts = null)
+    public function __construct(array $parts = [])
     {
-        if (null !== $parts) {
-            foreach ($parts as $part) {
-                    RequestPart::tryFrom($part) ?? throw new InvalidArgumentException(
-                    \sprintf('Invalid value "%s", possible are %s', $part, \implode(', ', RequestPart::allValues()))
+        foreach ($parts as &$part) {
+            if ($part instanceof RequestPart) {
+                continue;
+            }
+
+            if (!\is_string($part) || null === RequestPart::tryFrom($part)) {
+                throw new InvalidArgumentException(
+                    \sprintf('Invalid value for Request DTO parts. Possible are %s',
+                             \implode(', ', RequestPart::allValues()))
                 );
             }
-        }
 
-        $this->parts = ($part ??= RequestPart::all());
+            $part = RequestPart::from($part);
+        }
+        unset($part);
+
+        /** @var RequestPart[] $parts */
+        $this->parts = empty($parts) ? RequestPart::all() : $parts;
     }
 
+    /**
+     * @return RequestPart[]
+     */
     public function getParts(): array
     {
         return $this->parts;

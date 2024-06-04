@@ -56,9 +56,8 @@ final readonly class ValueConverter
             return $value;
         }
 
-        /** @var class-string $transformer */
         $transformerClassOrId = $transformable->getTransformerClassOrId();
-        $transformer          = $this->instantiateTransformer($transformerClassOrId);
+        $transformer          = $this->instantiateTransformer($transformerClassOrId); // @phpstan-ignore-line
 
         if ($sourceMetadata->isDoctrineEntity()) {
             return $transformer->reverse($value);
@@ -67,6 +66,9 @@ final readonly class ValueConverter
         return $transformer->transform($value);
     }
 
+    /**
+     * @param  string|class-string  $transformerClassOrId
+     */
     private function instantiateTransformer(string $transformerClassOrId): TransformerInterface
     {
         if (null !== $this->container) {
@@ -82,6 +84,7 @@ final readonly class ValueConverter
 
         $this->validateTransformer($transformerClassOrId);
 
+        /* @phpstan-ignore-next-line */
         return (new \ReflectionClass($transformerClassOrId))->newInstanceWithoutConstructor();
     }
 

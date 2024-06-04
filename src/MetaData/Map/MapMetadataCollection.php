@@ -8,6 +8,9 @@ namespace ControlBit\Dto\MetaData\Map;
  */
 final class MapMetadataCollection implements \IteratorAggregate, \Countable
 {
+    /**
+     * @var MemberMapMetadata[]
+     */
     private array $collection = [];
 
     public function add(MemberMapMetadata $mapMetadata): void
@@ -15,6 +18,9 @@ final class MapMetadataCollection implements \IteratorAggregate, \Countable
         $this->collection[] = $mapMetadata;
     }
 
+    /**
+     * @return MemberMapMetadata[]
+     */
     public function getAll(): array
     {
         return $this->collection;

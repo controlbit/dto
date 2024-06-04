@@ -6,6 +6,7 @@ namespace ControlBit\Dto\Mapper\ValueConverter;
 use ControlBit\Dto\Attribute\Dto;
 use ControlBit\Dto\Contract\Accessor\SetterInterface;
 use ControlBit\Dto\Contract\Mapper\ValueConverterInterface;
+use ControlBit\Dto\Exception\RuntimeException;
 use ControlBit\Dto\Mapper\Mapper;
 
 /**
@@ -28,18 +29,25 @@ final class ArrayOfDto implements ValueConverterInterface
     }
 
     /**
-     * @param  iterable<mixed>|array<mixed>  $value
+     * @param  iterable<object>|object[]  $value
      */
     public function execute(Mapper $mapper, SetterInterface $setter, mixed $value): mixed
     {
         $class = $setter->getType()->getOneClass();
 
-        /** @var Dto $destinationDtoAttribute */
-        $destinationDtoAttribute = $setter->getAttributes()->get(Dto::class)
-                                   ?? ((new \ReflectionClass($class))->getAttributes(Dto::class)[0])->newInstance();
+        try {
+            /** @var Dto $destinationDtoAttribute */
+            $destinationDtoAttribute = $setter->getAttributes()->get(Dto::class)
+                                       ??
+                                       /* @phpstan-ignore-next-line  */
+                                       ((new \ReflectionClass($class))->getAttributes(Dto::class)[0])->newInstance();
+
+        } catch (\ReflectionException) {
+            throw new RuntimeException('Unable to determine destination DTO class.');
+        }
 
         return \array_map(
-            static fn($item) => $mapper->map($item, $destinationDtoAttribute->getClass()),
+            static fn(object|array $item) => $mapper->map($item, $destinationDtoAttribute->getClass()),
             [...$value],
         );
     }
