@@ -4,9 +4,10 @@ declare(strict_types=1);
 namespace ControlBit\Dto\Mapper\ValueConverter;
 
 use ControlBit\Dto\Attribute\Dto;
+use ControlBit\Dto\Contract\Accessor\SetterInterface;
 use ControlBit\Dto\Contract\Mapper\ValueConverterInterface;
+use ControlBit\Dto\Exception\RuntimeException;
 use ControlBit\Dto\Mapper\Mapper;
-use ControlBit\Dto\MetaData\PropertyMetadata;
 
 /**
  *  Case when we have an iterable, and property to map to is
@@ -14,25 +15,39 @@ use ControlBit\Dto\MetaData\PropertyMetadata;
  */
 final class ArrayOfDto implements ValueConverterInterface
 {
-    public function supports(object $source, PropertyMetadata $sourcePropertyMetadata, mixed $value): bool
+    public function supports(SetterInterface $setter, mixed $value): bool
     {
         if (\is_object($value) || !\is_iterable($value)) {
             return false;
         }
 
-        return $sourcePropertyMetadata->getDestinationSetter()?->getAttributes()->has(Dto::class) ?? false;
+        if ($setter->getAttributes()->has(Dto::class)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
-     * @param  iterable<mixed>|array<mixed>  $value
+     * @param  iterable<object>|object[]  $value
      */
-    public function execute(Mapper $mapper, PropertyMetadata $sourcePropertyMetadata, mixed $value): mixed
+    public function execute(Mapper $mapper, SetterInterface $setter, mixed $value): mixed
     {
-        /** @var Dto $destinationDtoAttribute */
-        $destinationDtoAttribute = $sourcePropertyMetadata->getDestinationSetter()?->getAttributes()->get(Dto::class);
+        $class = $setter->getType()->getOneClass();
+
+        try {
+            /** @var Dto $destinationDtoAttribute */
+            $destinationDtoAttribute = $setter->getAttributes()->get(Dto::class)
+                                       ??
+                                       /* @phpstan-ignore-next-line  */
+                                       ((new \ReflectionClass($class))->getAttributes(Dto::class)[0])->newInstance();
+
+        } catch (\ReflectionException) {
+            throw new RuntimeException('Unable to determine destination DTO class.');
+        }
 
         return \array_map(
-            static fn($item) => $mapper->map($item, $destinationDtoAttribute->getClass()),
+            static fn(object|array $item) => $mapper->map($item, $destinationDtoAttribute->getClass()),
             [...$value],
         );
     }

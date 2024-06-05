@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace ControlBit\Dto\MetaData;
+namespace ControlBit\Dto\MetaData\Property;
 
 use ControlBit\Dto\Bag\AttributeBag;
 use ControlBit\Dto\Bag\TypeBag;
@@ -26,6 +26,7 @@ final readonly class PropertyMetadataFactory
             $type,
             $this->accessorFinder->find($reflectionObject, $reflectionProperty),
             AttributeBag::fromArray(instantiate_attributes($reflectionProperty)),
+            $reflectionProperty->isPublic(),
         );
     }
 

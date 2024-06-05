@@ -31,5 +31,13 @@
         >
             <tag name="dto_bundle.value_converter" priority="80"/>
         </service>
+
+        <service
+                id="ControlBit\Dto\Mapper\ValueConverter\EntityIdentifier"
+                class="ControlBit\Dto\Mapper\ValueConverter\EntityIdentifier"
+        >
+            <tag name="dto_bundle.value_converter" priority="70"/>
+        </service>
+
     </services>
 </container>

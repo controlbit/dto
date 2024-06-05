@@ -12,26 +12,38 @@
 
         <!--        Property Metadata Factory-->
         <service
-                id="ControlBit\Dto\MetaData\PropertyMetadataFactory"
-                class="ControlBit\Dto\MetaData\PropertyMetadataFactory"
+                id="ControlBit\Dto\MetaData\Property\PropertyMetadataFactory"
+                class="ControlBit\Dto\MetaData\Property\PropertyMetadataFactory"
         >
             <argument type="service" id="ControlBit\Dto\Finder\AccessorFinder"/>
         </service>
 
         <!--        Method Metadata Factory-->
         <service
-                id="ControlBit\Dto\MetaData\MethodMetadataFactory"
-                class="ControlBit\Dto\MetaData\MethodMetadataFactory"
+                id="ControlBit\Dto\MetaData\Method\MethodMetadataFactory"
+                class="ControlBit\Dto\MetaData\Method\MethodMetadataFactory"
         />
 
         <!--        Object Metadata Factory-->
         <service
-                id="ControlBit\Dto\MetaData\ObjectMetadataFactory"
-                class="ControlBit\Dto\MetaData\ObjectMetadataFactory"
+                id="ControlBit\Dto\MetaData\Class\ClassMetadataFactory"
+                class="ControlBit\Dto\MetaData\Class\ClassMetadataFactory"
         >
-            <argument type="service" id="ControlBit\Dto\MetaData\PropertyMetadataFactory"/>
-            <argument type="service" id="ControlBit\Dto\MetaData\MethodMetadataFactory"/>
+            <argument type="service" id="ControlBit\Dto\MetaData\Property\PropertyMetadataFactory"/>
+            <argument type="service" id="ControlBit\Dto\MetaData\Method\MethodMetadataFactory"/>
         </service>
+
+        <!--        Destination Factory -->
+        <service
+                id="ControlBit\Dto\Factory\DestinationFactory"
+                class="ControlBit\Dto\Factory\DestinationFactory"
+        />
+
+        <!--        MapMetadata Factory -->
+        <service
+                id="ControlBit\Dto\MetaData\Map\MapMetadataFactory"
+                class="ControlBit\Dto\MetaData\Map\MapMetadataFactory"
+        />
 
     </services>
 </container>

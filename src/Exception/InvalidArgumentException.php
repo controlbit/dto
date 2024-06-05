@@ -5,7 +5,7 @@ namespace ControlBit\Dto\Exception;
 
 use ControlBit\Dto\Contract\DtoExceptionInterface;
 
-final class InvalidArgumentException extends \Exception implements DtoExceptionInterface
+class InvalidArgumentException extends \Exception implements DtoExceptionInterface
 {
 
 }

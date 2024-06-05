@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace ControlBit\Dto\Bag;
 
-use ControlBit\Dto\MetaData\PropertyMetadata;
+use ControlBit\Dto\MetaData\Property\PropertyMetadata;
 
 /**
- * @implements \IteratorAggregate<PropertyMetadata>
+ * @implements \IteratorAggregate<int, PropertyMetadata>
  */
 final class PropertyBag implements \IteratorAggregate
 {
@@ -45,10 +45,12 @@ final class PropertyBag implements \IteratorAggregate
     }
 
     /**
-     * @return \Traversable<PropertyMetadata>
+     * @return \Traversable<int, PropertyMetadata>
      */
     public function getIterator(): \Traversable
     {
-        yield from $this->properties;
+        foreach ($this->properties as $property) {
+            yield $property;
+        }
     }
 }

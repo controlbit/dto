@@ -5,7 +5,7 @@ namespace ControlBit\Dto\Exception;
 
 use ControlBit\Dto\Contract\DtoExceptionInterface;
 
-final class EntityNotFoundException extends \Exception implements DtoExceptionInterface
+class EntityNotFoundException extends \Exception implements DtoExceptionInterface
 {
     private string     $entityClass;
     private string|int $identifier;

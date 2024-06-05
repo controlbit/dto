@@ -1,14 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace ControlBit\Dto\MetaData;
+namespace ControlBit\Dto\MetaData\Property;
 
 use ControlBit\Dto\Attribute\Identifier;
 use ControlBit\Dto\Attribute\Ignore;
 use ControlBit\Dto\Bag\AttributeBag;
 use ControlBit\Dto\Bag\TypeBag;
 use ControlBit\Dto\Contract\Accessor\AccessorInterface;
-use ControlBit\Dto\Contract\Accessor\SetterInterface;
 use ControlBit\Dto\Contract\AttributedInterface;
 
 final class PropertyMetadata implements AttributedInterface
@@ -18,7 +17,7 @@ final class PropertyMetadata implements AttributedInterface
         private readonly TypeBag           $type,
         private readonly AccessorInterface $accessor,
         private readonly AttributeBag      $attributes,
-        private ?SetterInterface           $destinationSetter = null,
+        private readonly bool              $isPublic,
     ) {
     }
 
@@ -41,8 +40,7 @@ final class PropertyMetadata implements AttributedInterface
     {
         return
             $this->getAttributes()->has(Ignore::class) ||
-            $this->getAttributes()->has(Identifier::class) ||
-            null === $this->destinationSetter;
+            $this->getAttributes()->has(Identifier::class);
     }
 
     public function getAttributes(): AttributeBag
@@ -50,15 +48,8 @@ final class PropertyMetadata implements AttributedInterface
         return $this->attributes;
     }
 
-    public function getDestinationSetter(): ?SetterInterface
+    public function isPublic(): bool
     {
-        return $this->destinationSetter;
-    }
-
-    public function setDestinationSetter(?SetterInterface $destinationSetter): PropertyMetadata
-    {
-        $this->destinationSetter = $destinationSetter;
-
-        return $this;
+        return $this->isPublic;
     }
 }

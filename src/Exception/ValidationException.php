@@ -7,7 +7,7 @@ namespace ControlBit\Dto\Exception;
 use ControlBit\Dto\Contract\DtoExceptionInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-final class ValidationException extends \Exception implements DtoExceptionInterface
+class ValidationException extends \Exception implements DtoExceptionInterface
 {
     private ConstraintViolationListInterface $violationList;
 

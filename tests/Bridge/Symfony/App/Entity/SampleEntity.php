@@ -22,7 +22,7 @@ class SampleEntity
 
     public function __construct(?string $id = null, int $count = 0)
     {
-        $this->id    = Uuid::fromString($id);
+        $this->id    = null !== $id ? Uuid::fromString($id) : null;
         $this->count = $count;
     }
 

@@ -5,5 +5,8 @@ namespace ControlBit\Dto\Contract\Mapper;
 
 interface MapperInterface
 {
-    public function map(mixed $source, mixed $destination = null): object|false;
+    /**
+     * @param  object|array<mixed>  $source
+     */
+    public function map(object|array $source, ?string $destination = null): object;
 }

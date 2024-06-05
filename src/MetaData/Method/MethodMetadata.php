@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace ControlBit\Dto\MetaData;
+namespace ControlBit\Dto\MetaData\Method;
 
 use ControlBit\Dto\Bag\AttributeBag;
 use ControlBit\Dto\Bag\TypeBag;

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace ControlBit\Dto\Adapter;
 
-use ControlBit\Dto\Contract\Mapper\CaseTransformerInterface;
+use ControlBit\Dto\Contract\CaseTransformerInterface;
 use ControlBit\Dto\Contract\Mapper\MapAdapterInterface;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 

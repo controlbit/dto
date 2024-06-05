@@ -1,10 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace ControlBit\Dto\Tests\Mapper\ViaSetter;
 
-use ControlBit\Dto\Attribute\Setter;
-use ControlBit\Dto\Exception\InvalidArgumentException;
-use ControlBit\Dto\Exception\ValueException;
+use ControlBit\Dto\Attribute\MapTo;
+use ControlBit\Dto\Exception\PropertyMapException;
 use ControlBit\Dto\Tests\LibraryTestCase;
 
 class TypedTest extends LibraryTestCase
@@ -12,7 +12,7 @@ class TypedTest extends LibraryTestCase
     public function testViaSetter(): void
     {
         $from = new class() {
-            #[Setter('setBar')]
+            #[Mapto('setBar')]
             public string $foo = 'foo';
         };
 
@@ -38,7 +38,7 @@ class TypedTest extends LibraryTestCase
     public function testViaSetterWrongType(): void
     {
         $from = new class() {
-            #[Setter('setBar')]
+            #[MapTo('setBar')]
             public string $foo = 'foo';
         };
 
@@ -56,28 +56,23 @@ class TypedTest extends LibraryTestCase
             }
         };
 
-        $this->expectException(ValueException::class);
+        $this->expectException(PropertyMapException::class);
         $this->expectExceptionMessageMatches(
-            '/Cannot map value "foo" of "(.*)" to destination object of "(.*)"\. Check if writable\/callable and correct type\(s\)/'
+            '/Cannot map property "foo" of "(.*)" to destination object of "(.*)"\. Check if writable\/callable and correct type\(s\)/'
         );
 
         $this->getMapper()->map($from, $to);
     }
 
-    public function testSetterMethodDoesNotExistsThrowsException(): void
+    public function testSetterMethodDoesNotExistsLeavesUnmapped(): void
     {
         $from = new class() {
-            #[Setter('setFoo')]
+            #[MapTo('setBar')]
             public string $foo = 'foo';
         };
 
         $to = new class() {
             private bool $bar = false;
-
-            public function setBar(bool $foo)
-            {
-                $this->bar = $foo;
-            }
 
             public function isBar(): bool
             {
@@ -85,40 +80,28 @@ class TypedTest extends LibraryTestCase
             }
         };
 
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageMatches(
-            '/Provided setter method \"setFoo\(\)\" on \"(.*)\" does not exists\./'
-        );
+        $mapped = $this->getMapper()->map($from, $to);
 
-        $this->getMapper()->map($from, $to);
+        self::assertFalse($mapped->isBar());
     }
 
     public function testSetterNonPublicMethodThrowsException(): void
     {
         $from = new class() {
-            #[Setter('setBar')]
+            #[MapTo('setBar')]
             public string $foo = 'foo';
         };
 
         $to = new class() {
-            private bool $bar = false;
+            private string $bar;
 
-            private function setBar(bool $foo)
+            private function setBar(string $foo)
             {
                 $this->bar = $foo;
             }
-
-            public function isBar(): bool
-            {
-                return $this->bar;
-            }
         };
 
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageMatches(
-            '/Provided setter method \"setBar\(\)\" on \"(.*)\" must be public\./'
-        );
-
+        $this->expectException(PropertyMapException::class);
         $this->getMapper()->map($from, $to);
     }
 }

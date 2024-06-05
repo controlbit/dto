@@ -1,14 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace ControlBit\Dto\MetaData;
+namespace ControlBit\Dto\MetaData\Class;
 
 use ControlBit\Dto\Bag\AttributeBag;
 use ControlBit\Dto\Bag\MethodBag;
 use ControlBit\Dto\Bag\PropertyBag;
+use ControlBit\Dto\MetaData\Method\MethodMetadataFactory;
+use ControlBit\Dto\MetaData\Property\PropertyMetadataFactory;
 use function ControlBit\Dto\instantiate_attributes;
 
-final readonly class ObjectMetadataFactory
+final readonly class ClassMetadataFactory
 {
     public function __construct(
         private PropertyMetadataFactory $propertyMetadataFactory,
@@ -16,7 +18,7 @@ final readonly class ObjectMetadataFactory
     ) {
     }
 
-    public function create(object $object): ObjectMetadata
+    public function create(object $object): ClassMetadata
     {
         $reflectionObject = new \ReflectionObject($object);
 
@@ -30,7 +32,7 @@ final readonly class ObjectMetadataFactory
             $methods->add($this->methodMetadataFactory->create($object, $reflectionMethod->getName()));
         }
 
-        return new ObjectMetadata(
+        return new ClassMetadata(
             \get_class($object),
             AttributeBag::fromArray(instantiate_attributes($reflectionObject)),
             $properties,

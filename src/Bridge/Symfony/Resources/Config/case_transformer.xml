@@ -11,12 +11,12 @@
         />
 
         <prototype
-                namespace="ControlBit\Dto\Adapter\CaseTransformer\"
-                resource="../../../../Adapter/CaseTransformer/*"
+                namespace="ControlBit\Dto\CaseTransformer\"
+                resource="../../../../../src/CaseTransformer/*"
         />
 
         <service
-                id="ControlBit\Dto\Contract\Mapper\CaseTransformerInterface"
+                id="ControlBit\Dto\Contract\CaseTransformerInterface"
                 alias="dto_bundle.case_transformer"
         />
 

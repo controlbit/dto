@@ -37,7 +37,9 @@ final class AttributeBag implements \IteratorAggregate
     }
 
     /**
-     * @param  class-string  $attributeClass
+     * @template T of object
+     * @param  class-string<T>  $attributeClass
+     * @return T
      */
     public function get(string $attributeClass): ?object
     {

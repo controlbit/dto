@@ -87,7 +87,7 @@ class EntityTest extends SymfonyTestCase
         $source      = $this->entityManger->getRepository(SampleEntity::class)->find(AppFixtures::$ID);
         $destination = new class() {
             #[Transformer(CountTransformer::class)]
-            public int   $count;
+            public int  $count;
         };
 
         $mappedObject = $this->mapper->map($source, $destination);

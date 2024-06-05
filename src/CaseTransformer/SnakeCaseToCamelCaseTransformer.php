@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace ControlBit\Dto\Adapter\CaseTransformer;
+namespace ControlBit\Dto\CaseTransformer;
 
-use ControlBit\Dto\Contract\Mapper\CaseTransformerInterface;
+use ControlBit\Dto\Contract\CaseTransformerInterface;
 
 final class SnakeCaseToCamelCaseTransformer implements CaseTransformerInterface
 {

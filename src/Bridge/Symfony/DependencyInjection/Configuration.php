@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace ControlBit\Dto\Bridge\Symfony\DependencyInjection;
 
-use ControlBit\Dto\Adapter\CaseTransformer\SnakeCaseToCamelCaseTransformer;
+use ControlBit\Dto\CaseTransformer\SnakeCaseToCamelCaseTransformer;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 

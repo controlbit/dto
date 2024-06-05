@@ -44,6 +44,7 @@ class DtoControllerTest extends SymfonyTestCase
                 ],
                 'nestedDtoArray' => [],
                 'scalarArray'    => [],
+                'scalar'         => null,
             ],
             \json_decode((string)$this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR)
         );

@@ -3,70 +3,112 @@ declare(strict_types=1);
 
 namespace ControlBit\Dto\Mapper;
 
-use ControlBit\Dto\Attribute\Transformer;
 use ControlBit\Dto\Contract\Accessor\SetterInterface;
 use ControlBit\Dto\Contract\Mapper\ValueConverterInterface;
-use ControlBit\Dto\MetaData\ObjectMetadata;
-use ControlBit\Dto\MetaData\PropertyMetadata;
+use ControlBit\Dto\Contract\Transformer\TransformableInterface;
+use ControlBit\Dto\Contract\Transformer\TransformerInterface;
+use ControlBit\Dto\Exception\InvalidArgumentException;
+use ControlBit\Dto\MetaData\Class\ClassMetadata;
+use ControlBit\Dto\MetaData\Map\MemberMapMetadata;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 final readonly class ValueConverter
 {
     /**
      * @param  iterable<ValueConverterInterface>  $valueConverters
      */
-    public function __construct(private iterable $valueConverters)
-    {
+    public function __construct(
+        private iterable            $valueConverters,
+        private ?ContainerInterface $container = null,
+    ) {
     }
 
     public function map(
-        Mapper $mapper,
-        object $source,
-        ObjectMetadata $sourceMetadata,
-        PropertyMetadata $sourcePropertyMetadata,
-        SetterInterface $destinationSetter,
-    ): mixed
-    {
-        $value = $this->transform($source, $sourceMetadata, $sourcePropertyMetadata, $destinationSetter);
+        Mapper            $mapper,
+        ClassMetadata     $sourceMetadata,
+        SetterInterface   $setter,
+        MemberMapMetadata $memberMapMetadata,
+        mixed             $value,
+    ): mixed {
+        $value = $this->transform($value, $sourceMetadata, $memberMapMetadata);
 
         foreach ($this->valueConverters as $valueConverter) {
-            if (!$valueConverter->supports($source, $sourcePropertyMetadata, $value)) {
+            if (!$valueConverter->supports($setter, $value)) {
                 continue;
             }
 
-            return $valueConverter->execute($mapper, $sourcePropertyMetadata, $value);
+            $value = $valueConverter->execute($mapper, $setter, $value);
+        }
+
+        if ($setter instanceof TransformableInterface) {
+            $value = $this->transform($value, $sourceMetadata, $setter);
         }
 
         return $value;
     }
 
     private function transform(
-        object $source,
-        ObjectMetadata $sourceMetadata,
-        PropertyMetadata $sourcePropertyMetadata,
-        SetterInterface $destinationSetter,
-    ): mixed
-    {
-        $attributes = $sourcePropertyMetadata->getAttributes();
+        mixed                  $value,
+        ClassMetadata          $sourceMetadata,
+        TransformableInterface $transformable,
+    ): mixed {
+        if (!$transformable->hasTransformer()) {
+            return $value;
+        }
 
-        // Source is Doctrine Entity, Destination is DTO
+        $transformerClassOrId = $transformable->getTransformerClassOrId();
+        $transformer          = $this->instantiateTransformer($transformerClassOrId); // @phpstan-ignore-line
+
         if ($sourceMetadata->isDoctrineEntity()) {
-            $attributes = $destinationSetter->getAttributes();
+            return $transformer->reverse($value);
         }
 
-        $value      = $sourcePropertyMetadata->getAccessor()->get($source);
+        return $transformer->transform($value);
+    }
 
-        foreach ($attributes as $attribute) {
-            if (!$attribute instanceof Transformer) {
-                continue;
-            }
-
-            if ($sourceMetadata->isDoctrineEntity()) {
-                return $attribute->getTransformerClass()::reverse($value);
-            }
-
-            return $attribute->getTransformerClass()::transform($value);
+    /**
+     * @param  string|class-string  $transformerClassOrId
+     */
+    private function instantiateTransformer(string $transformerClassOrId): TransformerInterface
+    {
+        if (null !== $this->container) {
+            $transformerService = $this->container->get($transformerClassOrId);
         }
 
-        return $value;
+        if (isset($transformerService)) {
+            $this->validateTransformer($transformerService);
+
+            /** @var TransformerInterface $transformerService */
+            return $transformerService;
+        }
+
+        $this->validateTransformer($transformerClassOrId);
+
+        /* @phpstan-ignore-next-line */
+        return (new \ReflectionClass($transformerClassOrId))->newInstanceWithoutConstructor();
+    }
+
+    private function validateTransformer(object|string $transformerClassOrObject): void
+    {
+        if (\is_string($transformerClassOrObject) && !\class_exists($transformerClassOrObject)) {
+            throw new InvalidArgumentException(
+                \sprintf(
+                    'Transformer class "%s" does not exists.',
+                    $transformerClassOrObject,
+                )
+            );
+        }
+
+        if (\is_a($transformerClassOrObject, TransformerInterface::class, true)) {
+            return;
+        }
+
+        throw new InvalidArgumentException(
+            \sprintf(
+                'Transformer "%s" must implement "%s".',
+                \is_object($transformerClassOrObject) ? $transformerClassOrObject::class : $transformerClassOrObject,
+                TransformerInterface::class,
+            )
+        );
     }
 }
