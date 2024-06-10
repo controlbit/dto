@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ControlBit\Dto\Tests\Bridge\Symfony;
 
-use ControlBit\Dto\Attribute\Entity;
+use ControlBit\Dto\Attribute\Dto;
 use ControlBit\Dto\Attribute\Identifier;
 use ControlBit\Dto\Attribute\Transformer;
 use ControlBit\Dto\Contract\Mapper\MapperInterface;
@@ -33,7 +33,7 @@ class EntityTest extends SymfonyTestCase
     {
         $id = AppFixtures::$ID;
 
-        $source = new #[Entity(SampleEntity::class)] class($id) {
+        $source = new #[Dto(entityClass: SampleEntity::class)] class($id) {
             #[Identifier]
             public string $id;
 
@@ -53,7 +53,7 @@ class EntityTest extends SymfonyTestCase
 
     public function testEntityIsNew(): void
     {
-        $source = new #[Entity(SampleEntity::class)] class() {
+        $source = new #[Dto(entityClass: SampleEntity::class)] class() {
             public int $count = 30;
         };
 
@@ -69,7 +69,7 @@ class EntityTest extends SymfonyTestCase
 
     public function testEntityDoesntHaveManager(): void
     {
-        $source = new #[Entity(EntityWithoutManager::class)] class() {
+        $source = new #[Dto(entityClass: EntityWithoutManager::class)] class() {
             #[Identifier]
             public string $id = "a99571f8-2b5a-4c0a-a7ce-fa1845c588c9"; // This should not be assigned nor found.
         };

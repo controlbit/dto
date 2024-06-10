@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ControlBit\Dto\Bridge\Symfony\DependencyInjection;
 
 use ControlBit\Dto\CaseTransformer\SnakeCaseToCamelCaseTransformer;
+use ControlBit\Dto\Enum\ConstructorStrategy;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -30,6 +31,11 @@ final class Configuration implements ConfigurationInterface
                     ->booleanNode('map_private_properties')
                         ->defaultValue(true)
                         ->info('Should map private properties directly, using reflection.')
+                    ->end()
+                    ->enumNode('constructor_strategy')
+                        ->values(ConstructorStrategy::all())
+                        ->defaultValue(ConstructorStrategy::OPTIONAL->value)
+                        ->info('Default constructor strategy. Can be overridden via Attribute.')
                     ->end()
             ->end()
         ;

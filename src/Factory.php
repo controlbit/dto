@@ -4,10 +4,17 @@ declare(strict_types=1);
 namespace ControlBit\Dto;
 
 use ControlBit\Dto\CaseTransformer\SnakeCaseToCamelCaseTransformer;
+use ControlBit\Dto\ConstructorStrategy\AlwaysStrategy;
+use ControlBit\Dto\ConstructorStrategy\NeverStrategy;
+use ControlBit\Dto\ConstructorStrategy\OptionalStrategy;
+use ControlBit\Dto\ConstructorStrategy\StrategyCollection;
 use ControlBit\Dto\Contract\CaseTransformerInterface;
+use ControlBit\Dto\Destination\ConstructedDelegate;
+use ControlBit\Dto\Destination\EntityDelegate;
+use ControlBit\Dto\Destination\NonConstructedDelegate;
 use ControlBit\Dto\Enum\ConstructorStrategy;
 use ControlBit\Dto\Exception\InvalidArgumentException;
-use ControlBit\Dto\Factory\DestinationFactory;
+use ControlBit\Dto\Destination\DestinationFactory;
 use ControlBit\Dto\Finder\AccessorFinder;
 use ControlBit\Dto\Finder\SetterFinder;
 use ControlBit\Dto\Finder\SetterType\Direct;
@@ -28,22 +35,10 @@ use ControlBit\Dto\MetaData\Property\PropertyMetadataFactory;
  */
 final class Factory
 {
-    /**
-     * @param  class-string  $caseTransformer
-     */
     public static function create(
         bool                $mapPrivateProperties = true,
-        string              $caseTransformer = SnakeCaseToCamelCaseTransformer::class,
         ConstructorStrategy $constructorStrategy = ConstructorStrategy::OPTIONAL,
     ): Mapper {
-        if (!\class_exists($caseTransformer)) {
-            throw new InvalidArgumentException(
-                \sprintf('Transformer class "%s" does not exist.', $caseTransformer)
-            );
-        }
-
-        /** @var CaseTransformerInterface $caseTransformer */
-        $caseTransformer         = new $caseTransformer();
         $accessorFinder          = new AccessorFinder($mapPrivateProperties);
         $propertyMetaDataFactory = new PropertyMetadataFactory($accessorFinder);
         $methodMetaDataFactory   = new MethodMetadataFactory();
@@ -64,7 +59,23 @@ final class Factory
                 new EntityIdentifier(),
             ]
         );
-        $destinationFactory = new DestinationFactory($valueConverter, $constructorStrategy);
+
+        $strategyCollection = new StrategyCollection(
+            [
+                new AlwaysStrategy(),
+                new NeverStrategy(),
+                new OptionalStrategy(),
+            ],
+            $constructorStrategy
+        );
+
+        $destinationFactory = new DestinationFactory(
+            [
+                new EntityDelegate(),
+                new ConstructedDelegate($valueConverter, $strategyCollection),
+                new NonConstructedDelegate(),
+            ]
+        );
 
         return new Mapper(
             $objectMetadataFactory,

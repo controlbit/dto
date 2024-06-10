@@ -10,40 +10,21 @@
                 autoconfigure="true"
         />
 
-        <!--        Property Metadata Factory-->
-        <service
-                id="ControlBit\Dto\MetaData\Property\PropertyMetadataFactory"
-                class="ControlBit\Dto\MetaData\Property\PropertyMetadataFactory"
+        <prototype
+                namespace="ControlBit\Dto\ConstructorStrategy\"
+                resource="../../../../../src/ConstructorStrategy/*Strategy.php"
         >
-            <argument type="service" id="ControlBit\Dto\Finder\AccessorFinder"/>
-        </service>
+            <tag name="dto_bundle.constructor_strategy"/>
+        </prototype>
 
-        <!--        Method Metadata Factory-->
+        <!--        Strategy Collection-->
         <service
-                id="ControlBit\Dto\MetaData\Method\MethodMetadataFactory"
-                class="ControlBit\Dto\MetaData\Method\MethodMetadataFactory"
-        />
-
-        <!--        Object Metadata Factory-->
-        <service
-                id="ControlBit\Dto\MetaData\Class\ClassMetadataFactory"
-                class="ControlBit\Dto\MetaData\Class\ClassMetadataFactory"
+                id="ControlBit\Dto\ConstructorStrategy\StrategyCollection"
+                class="ControlBit\Dto\ConstructorStrategy\StrategyCollection"
         >
-            <argument type="service" id="ControlBit\Dto\MetaData\Property\PropertyMetadataFactory"/>
-            <argument type="service" id="ControlBit\Dto\MetaData\Method\MethodMetadataFactory"/>
+            <argument type="tagged_iterator" tag="dto_bundle.constructor_strategy"/>
+            <argument>%dto_bundle.constructor_strategy%</argument>
         </service>
-
-        <!--        Destination Factory -->
-        <service
-                id="ControlBit\Dto\Factory\DestinationFactory"
-                class="ControlBit\Dto\Factory\DestinationFactory"
-        />
-
-        <!--        MapMetadata Factory -->
-        <service
-                id="ControlBit\Dto\MetaData\Map\MapMetadataFactory"
-                class="ControlBit\Dto\MetaData\Map\MapMetadataFactory"
-        />
 
     </services>
 </container>

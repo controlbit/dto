@@ -5,7 +5,7 @@ namespace ControlBit\Dto\Mapper;
 
 use ControlBit\Dto\Contract\Mapper\MapperInterface;
 use ControlBit\Dto\Exception\PropertyMapException;
-use ControlBit\Dto\Factory\DestinationFactory;
+use ControlBit\Dto\Destination\DestinationFactory;
 use ControlBit\Dto\Finder\SetterFinder;
 use ControlBit\Dto\MetaData\Class\ClassMetadata;
 use ControlBit\Dto\MetaData\Class\ClassMetadataFactory;
@@ -30,6 +30,8 @@ final readonly class Mapper implements MapperInterface
         // Preparing source object. It must be objected.
         $source = \is_object($source) ? $source : (object)$source;
 
+        \assert(\is_object($source));
+
         // Fetching source metadata. This could be cached. But not in case of stdClass.
         $sourceMetadata = $this->objectMetadataFactory->create($source);
 
@@ -51,8 +53,13 @@ final readonly class Mapper implements MapperInterface
 
         // Fetching source metadata. This could be cached. But not in case of stdClass.
         $destinationMetadata = $this->objectMetadataFactory->create($destination);
-
-        $destination = $this->execute($source, $destination, $sourceMetadata, $destinationMetadata, $mapMetadata);
+        $destination         = $this->execute(
+            $source,
+            $destination,
+            $sourceMetadata,
+            $destinationMetadata,
+            $mapMetadata
+        );
 
         Initializer::autoInitialize($destination, $destinationMetadata);
 
