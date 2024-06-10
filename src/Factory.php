@@ -35,6 +35,11 @@ use ControlBit\Dto\MetaData\Property\PropertyMetadataFactory;
  */
 final class Factory
 {
+    private function __construct()
+    {
+        // noop
+    }
+
     public static function create(
         bool                $mapPrivateProperties = true,
         ConstructorStrategy $constructorStrategy = ConstructorStrategy::OPTIONAL,

@@ -18,9 +18,9 @@ class Dto
      * @param  class-string|null  $entityClass
      */
     public function __construct(
-        public readonly ?string $class = null,
-        private readonly ?string $entityClass = null,
-        private readonly ConstructorStrategy $strategy = ConstructorStrategy::OPTIONAL,
+        public readonly ?string              $class = null,
+        private readonly ?string             $entityClass = null,
+        private readonly ConstructorStrategy $constructorStrategy = ConstructorStrategy::OPTIONAL,
     )
     {
     }
@@ -41,8 +41,8 @@ class Dto
         return $this->entityClass;
     }
 
-    public function getStrategy(): ConstructorStrategy
+    public function getConstructorStrategy(): ConstructorStrategy
     {
-        return $this->strategy;
+        return $this->constructorStrategy;
     }
 }

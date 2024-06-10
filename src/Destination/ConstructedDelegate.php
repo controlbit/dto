@@ -142,6 +142,6 @@ final readonly class ConstructedDelegate implements DestinationFactoryInterface
             return $this->constructorStrategyCollection->getDefaultStrategy();
         }
 
-        return $this->constructorStrategyCollection->getStrategy($dtoAttribute->getStrategy());
+        return $this->constructorStrategyCollection->getStrategy($dtoAttribute->getConstructorStrategy());
     }
 }
