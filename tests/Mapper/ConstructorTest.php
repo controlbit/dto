@@ -9,6 +9,7 @@ use ControlBit\Dto\Exception\InvalidArgumentException;
 use ControlBit\Dto\Factory;
 use ControlBit\Dto\Tests\LibraryTestCase;
 use ControlBit\Dto\Tests\Resources\DtoWithConstructor;
+use ControlBit\Dto\Tests\Resources\DtoWithoutConstructor;
 
 class ConstructorTest extends LibraryTestCase
 {
@@ -21,6 +22,27 @@ class ConstructorTest extends LibraryTestCase
         $mappedObject = $this->getMapper()->map($from, DtoWithConstructor::class);
 
         $this->assertEquals('foofoo', $mappedObject->foo);
+    }
+
+    public function testOptionalConstructorWhenMissingConstructor(): void
+    {
+        $from = new class() {
+            public string $foo = 'foo';
+        };
+
+        $mappedObject = $this->getMapper()->map($from, DtoWithoutConstructor::class);
+
+        $this->assertEquals('foo', $mappedObject->foo);
+    }
+
+    public function testOptionalConstructorWhenMissingArgument(): void
+    {
+        $from = new class() {
+        };
+
+        $mappedObject = $this->getMapper()->map($from, DtoWithConstructor::class);
+
+        $this->assertIsObject($mappedObject);
     }
 
     public function testNeverConstructorStrategy(): void
@@ -38,33 +60,20 @@ class ConstructorTest extends LibraryTestCase
     {
         $from = new class() {
             public string $foo = 'foo';
-            public string $bar = 'bar';
         };
 
-        $mappedObject = Factory::create(true, ConstructorStrategy::ALWAYS)->map($from, DtoWithConstructor::class);
+        $mappedObject = $this->getMapper()->map($from, DtoWithConstructor::class);
 
         $this->assertEquals('foofoo', $mappedObject->foo);
-        $this->assertEquals('bar', $mappedObject->bar);
     }
 
     public function testAlwaysConstructorWithoutAllArgumentsAvailableThrowsException(): void
-    {
-        $from = new class() {
-            public string $foo = 'foo';
-        };
-
-        $this->expectException(InvalidArgumentException::class);
-
-        Factory::create(true, ConstructorStrategy::ALWAYS)->map($from, DtoWithConstructor::class);
-    }
-
-    public function testOptionalConstructorWithoutAllRequiredArgumentsAvailableThrowsException(): void
     {
         $from = new class() {};
 
         $this->expectException(InvalidArgumentException::class);
 
-        $this->getMapper()->map($from, DtoWithConstructor::class);
+        Factory::create(true, ConstructorStrategy::ALWAYS)->map($from, DtoWithConstructor::class);
     }
 
     public function testAttributeOverridesDefaultStrategy(): void

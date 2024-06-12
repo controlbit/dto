@@ -3,17 +3,14 @@ declare(strict_types=1);
 
 namespace ControlBit\Dto;
 
-use ControlBit\Dto\CaseTransformer\SnakeCaseToCamelCaseTransformer;
 use ControlBit\Dto\ConstructorStrategy\AlwaysStrategy;
 use ControlBit\Dto\ConstructorStrategy\NeverStrategy;
 use ControlBit\Dto\ConstructorStrategy\OptionalStrategy;
 use ControlBit\Dto\ConstructorStrategy\StrategyCollection;
-use ControlBit\Dto\Contract\CaseTransformerInterface;
 use ControlBit\Dto\Destination\ConstructedDelegate;
 use ControlBit\Dto\Destination\EntityDelegate;
 use ControlBit\Dto\Destination\NonConstructedDelegate;
 use ControlBit\Dto\Enum\ConstructorStrategy;
-use ControlBit\Dto\Exception\InvalidArgumentException;
 use ControlBit\Dto\Destination\DestinationFactory;
 use ControlBit\Dto\Finder\AccessorFinder;
 use ControlBit\Dto\Finder\SetterFinder;
@@ -57,7 +54,7 @@ final class Factory
             ],
         );
 
-        $valueConverter     = new ValueConverter(
+        $valueConverter = new ValueConverter(
             [
                 new ArrayOfDto(),
                 new ArrayToObject(),
@@ -65,11 +62,14 @@ final class Factory
             ]
         );
 
+        $alwaysStrategy = new AlwaysStrategy($valueConverter);
+        $neverStrategy  = new NeverStrategy($mapPrivateProperties);
+
         $strategyCollection = new StrategyCollection(
             [
-                new AlwaysStrategy(),
-                new NeverStrategy(),
-                new OptionalStrategy(),
+                $alwaysStrategy,
+                $neverStrategy,
+                new OptionalStrategy($alwaysStrategy, $neverStrategy, $mapPrivateProperties),
             ],
             $constructorStrategy
         );
@@ -77,7 +77,7 @@ final class Factory
         $destinationFactory = new DestinationFactory(
             [
                 new EntityDelegate(),
-                new ConstructedDelegate($valueConverter, $strategyCollection),
+                new ConstructedDelegate($strategyCollection),
                 new NonConstructedDelegate(),
             ]
         );

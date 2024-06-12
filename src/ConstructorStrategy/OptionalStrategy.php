@@ -4,16 +4,21 @@ declare(strict_types=1);
 namespace ControlBit\Dto\ConstructorStrategy;
 
 use ControlBit\Dto\Contract\ConstructorStrategyInterface;
-use ControlBit\Dto\Exception\InvalidArgumentException;
+use ControlBit\Dto\Exception\MissingArgumentException;
+use ControlBit\Dto\Exception\MissingConstructorException;
+use ControlBit\Dto\Mapper\Mapper;
+use ControlBit\Dto\MetaData\Class\ClassMetadata;
 use ControlBit\Dto\MetaData\Map\MapMetadataCollection;
 
 final class OptionalStrategy implements ConstructorStrategyInterface
 {
     public const NAME = 'optional';
 
-    public function shouldInjectViaConstructor(): bool
-    {
-        return true;
+    public function __construct(
+        private readonly AlwaysStrategy $alwaysStrategy,
+        private readonly NeverStrategy  $neverStrategy,
+        private readonly bool           $mapPrivateProperties,
+    ) {
     }
 
     public function validate(
@@ -22,19 +27,29 @@ final class OptionalStrategy implements ConstructorStrategyInterface
     ): void {
         $constructor = $destinationReflectionClass->getConstructor();
 
-        if (null === $constructor) {
+        if ($this->mapPrivateProperties || null !== $constructor) {
             return;
         }
 
-        if ($constructor->getNumberOfRequiredParameters() > \count($sourceMapMetadataCollection)) {
-            throw new InvalidArgumentException(
-                'Not enough arguments in constructor, to be able to map with ConstructorStrategy "Always".'
-            );
-        }
+        $this->neverStrategy->validate(...func_get_args()); // @phpstan-ignore-line
     }
 
     public function getName(): string
     {
         return self::NAME;
+    }
+
+    public function create(
+        Mapper                $mapper,
+        object                $source,
+        ClassMetadata         $sourceMetadata,
+        MapMetadataCollection $sourceMapMetadataCollection,
+        \ReflectionClass      $reflectionClass,
+    ): object {
+        try {
+            return $this->alwaysStrategy->create(...func_get_args()); // @phpstan-ignore-line
+        } catch (MissingConstructorException|MissingArgumentException) {
+            return $this->neverStrategy->create(...func_get_args()); // @phpstan-ignore-line
+        }
     }
 }
